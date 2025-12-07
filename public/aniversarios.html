@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Aniversários</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f5dc; color: #3e2723; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 300px auto; background: #fff; padding: 20px; border: 2px solid #795548; border-radius: 8px; }
+    h2, h3 { text-align: center; color: #5d4037; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    input, button { padding: 10px; border: 1px solid #795548; border-radius: 4px; }
+    button { background-color: #795548; color: #fff; cursor: pointer; }
+    button:hover { background-color: #5d4037; }
+    ul { list-style: none; padding: 0; }
+    li { background: #efebe9; margin: 5px 0; padding: 8px; border-radius: 4px; }
+    a { color: #795548; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Meus Aniversários</h2>
+    <form id="aniversarioForm">
+      <input type="text" name="nome" placeholder="Nome" required>
+      <input type="date" name="data" required>
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <h3>Lista de Aniversários</h3>
+    <ul id="listaAniversarios"></ul>
+
+    <p><a href="tarefas.html">Ir para Tarefas</a></p>
+    <p><a href="login.html" onclick="logout()">Sair</a></p>
+  </div>
+
+  <script>
+async function carregarAniversarios() {
+  const res = await fetch("/aniversarios");
+  const aniversarios = await res.json();
+  const lista = document.getElementById("listaAniversarios");
+  lista.innerHTML = "";
+  aniversarios.forEach(a => {
+    const li = document.createElement("li");
+    li.textContent = `${a.nome} - ${new Date(a.data).toLocaleDateString("pt-BR")}`;
+
+    // Botão editar
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.style.marginLeft = "10px";
+    editBtn.onclick = () => editarAniversario(a);
+
+    // Botão apagar
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "❌";
+    delBtn.style.marginLeft = "5px";
+    delBtn.onclick = async () => {
+      await fetch(`/aniversarios/${a.id}`, { method: "DELETE" });
+      carregarAniversarios();
+    };
+
+    li.appendChild(editBtn);
+    li.appendChild(delBtn);
+    lista.appendChild(li);
+  });
+}
+
+async function editarAniversario(aniversario) {
+  const form = document.getElementById("aniversarioForm");
+  form.nome.value = aniversario.nome;
+  form.data.value = aniversario.data.split("T")[0];
+
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const data = {
+      nome: form.nome.value,
+      data: form.data.value
+    };
+    await fetch(`/aniversarios/${aniversario.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    form.reset();
+    form.onsubmit = adicionarAniversario; // volta para modo adicionar
+    carregarAniversarios();
+  };
+}
+
+async function adicionarAniversario(e) {
+  e.preventDefault();
+  const form = document.getElementById("aniversarioForm");
+  const data = {
+    nome: form.nome.value,
+    data: form.data.value
+  };
+  await fetch("/aniversarios", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  form.reset();
+  carregarAniversarios();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  carregarAniversarios();
+  document.getElementById("aniversarioForm").onsubmit = adicionarAniversario;
+});
+
+  async function logout() {
+    await fetch("/logout", { method: "POST" });
+  }
+  </script>
+</body>
+</html>

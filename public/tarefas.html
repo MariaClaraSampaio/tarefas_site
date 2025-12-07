@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Tarefas</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f5dc; color: #3e2723; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 100px auto; background: #fff; padding: 20px; border: 2px solid #795548; border-radius: 8px; }
+    h2, h3 { text-align: center; color: #5d4037; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    input, select, button { padding: 10px; border: 1px solid #795548; border-radius: 4px; }
+    button { background-color: #795548; color: #fff; cursor: pointer; }
+    button:hover { background-color: #5d4037; }
+    ul { list-style: none; padding: 0; }
+    li { background: #efebe9; margin: 5px 0; padding: 8px; border-radius: 4px; }
+    a { color: #795548; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Minhas Tarefas</h2>
+    <form id="tarefaForm">
+      <input type="text" name="titulo" placeholder="Título" required>
+      <input type="text" name="descricao" placeholder="Descrição">
+      <select name="categoria">
+        <option value="trabalho">Trabalho</option>
+        <option value="ideia">Ideia</option>
+        <option value="comida">Comida</option>
+        <option value="esporte">Esporte</option>
+        <option value="musica">Música</option>
+      </select>
+      <input type="date" name="prazo">
+      <input type="time" name="hora">
+      <select name="urgencia">
+        <option value="baixa">Baixa</option>
+        <option value="media" selected>Média</option>
+        <option value="alta">Alta</option>
+      </select>
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <h3>Lista de Tarefas</h3>
+    <ul id="listaTarefas"></ul>
+
+    <p><a href="aniversarios.html">Ir para Aniversários</a></p>
+    <p><a href="login.html" onclick="logout()">Sair</a></p>
+  </div>
+<script>
+async function carregarTarefas() {
+  const res = await fetch("/tarefas");
+  const tarefas = await res.json();
+  const lista = document.getElementById("listaTarefas");
+  lista.innerHTML = "";
+  tarefas.forEach(t => {
+    const li = document.createElement("li");
+    li.textContent = `${t.titulo} - ${t.urgencia} - ${t.concluida ? "✔️" : "❌"}`;
+
+    // Botão de editar
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.style.marginLeft = "10px";
+    editBtn.onclick = () => editarTarefa(t);
+
+    // Botão de apagar
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "❌";
+    delBtn.style.marginLeft = "5px";
+    delBtn.onclick = async () => {
+      await fetch(`/tarefas/${t.id}`, { method: "DELETE" });
+      carregarTarefas();
+    };
+
+    li.appendChild(editBtn);
+    li.appendChild(delBtn);
+    lista.appendChild(li);
+  });
+}
+
+async function editarTarefa(tarefa) {
+  // Preenche o formulário com os dados da tarefa
+  const form = document.getElementById("tarefaForm");
+  form.titulo.value = tarefa.titulo;
+  form.descricao.value = tarefa.descricao || "";
+  form.categoria.value = tarefa.categoria;
+  form.prazo.value = tarefa.prazo ? tarefa.prazo.split("T")[0] : "";
+  form.hora.value = tarefa.hora || "";
+  form.urgencia.value = tarefa.urgencia;
+
+  // Quando enviar, faz PUT em vez de POST
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const data = {
+      titulo: form.titulo.value,
+      descricao: form.descricao.value,
+      categoria: form.categoria.value,
+      prazo: form.prazo.value,
+      hora: form.hora.value,
+      urgencia: form.urgencia.value
+    };
+    await fetch(`/tarefas/${tarefa.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    form.reset();
+    form.onsubmit = adicionarTarefa; // volta para modo adicionar
+    carregarTarefas();
+  };
+}
+
+async function adicionarTarefa(e) {
+  e.preventDefault();
+  const form = document.getElementById("tarefaForm");
+  const data = {
+    titulo: form.titulo.value,
+    descricao: form.descricao.value,
+    categoria: form.categoria.value,
+    prazo: form.prazo.value,
+    hora: form.hora.value,
+    urgencia: form.urgencia.value
+  };
+  await fetch("/tarefas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  form.reset();
+  carregarTarefas();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  carregarTarefas();
+  document.getElementById("tarefaForm").onsubmit = adicionarTarefa;
+});
+</script>
+
+</body>
+</html>

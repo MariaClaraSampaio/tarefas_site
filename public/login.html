@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5dc;
+      color: #3e2723;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 400px;
+    margin: 300px auto;
+      background: #fff;
+      padding: 20px;
+      border: 2px solid #795548;
+      border-radius: 8px;
+    }
+    h2 { text-align: center; color: #5d4037; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    input, button {
+      padding: 10px;
+      border: 1px solid #795548;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #795548;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover { background-color: #5d4037; }
+    a { color: #795548; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    p { text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="senha" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <p>Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("loginForm");
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const data = {
+        email: form.email.value,
+        senha: form.senha.value
+      };
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (json.message === "Login realizado") {
+        window.location.href = "tarefas.html";
+      } else {
+        alert(json.error || "Erro no login");
+      }
+    });
+  });
+  </script>
+</body>
+</html>

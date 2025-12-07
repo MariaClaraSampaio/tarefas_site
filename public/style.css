@@ -1,0 +1,161 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #121212;
+  color: #f0f0f0;
+  margin: 0;
+  display: flex;
+}
+
+.sidebar {
+  width: 220px;
+  background: #1e1e1e;
+  color: #ffd700;
+  padding: 20px;
+  position: fixed;
+  height: 100vh;
+  transition: transform 0.3s ease;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 12px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar ul li:hover {
+  color: #fff;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #ffd700;
+  font-size: 24px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.container {
+  margin-left: 240px;
+  padding: 20px;
+  width: 100%;
+}
+
+h1 {
+  color: #ffd700;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+form input, form select, form button {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+}
+
+form input, form select {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+form button {
+  background: #ffd700;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 16px;
+}
+
+.card {
+  background: #1e1e1e;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+.card .categoria {
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 8px;
+}
+
+.card input {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.card .info {
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.card .acoes {
+  display: flex;
+  gap: 10px;
+}
+
+.card .acoes button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.card .acoes button:first-child {
+  background: #228b22;
+  color: #fff;
+}
+
+.card .acoes button:last-child {
+  background: #b22222;
+  color: #fff;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .hamburger {
+    display: block;
+  }
+  .container {
+    margin-left: 0;
+  }
+}

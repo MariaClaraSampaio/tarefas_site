@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5dc;
+      color: #3e2723;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 400px;
+      margin: 300px auto;
+      background: #fff;
+      padding: 20px;
+      border: 2px solid #795548;
+      border-radius: 8px;
+    }
+    h2 { text-align: center; color: #5d4037; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    input, button {
+      padding: 10px;
+      border: 1px solid #795548;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #795548;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover { background-color: #5d4037; }
+    a { color: #795548; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    p { text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cadastro</h2>
+    <form id="cadastroForm">
+      <input type="text" name="nome" placeholder="Nome" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="senha" placeholder="Senha" required>
+      <button type="submit">Cadastrar</button>
+    </form>
+    <p>Já tem conta? <a href="login.html">Faça login</a></p>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("cadastroForm");
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const data = {
+        nome: form.nome.value,
+        email: form.email.value,
+        senha: form.senha.value
+      };
+      const res = await fetch("/cadastro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (json.id) {
+        alert("Cadastro realizado com sucesso!");
+        window.location.href = "login.html";
+      } else {
+        alert(json.error || "Erro no cadastro");
+      }
+    });
+  });
+  </script>
+</body>
+</html>
